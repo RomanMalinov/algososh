@@ -9,14 +9,14 @@ import { Circle } from "../ui/circle/circle";
 import { waitTime } from "./utils";
 import { useForm } from "../../hooks/use-form";
 
-export type TarrayElement = {
+export type TArrayElement = {
   value: string;
   color: ElementStates;
 };
 
 const reverseStringArray = async (
-  arr: TarrayElement[] | [],
-  setArr: React.Dispatch<React.SetStateAction<TarrayElement[]>>
+  arr: TArrayElement[] | [],
+  setArr: React.Dispatch<React.SetStateAction<TArrayElement[]>>
 ) => {
   const length = arr.length;
   const mid = Math.floor(length / 2);
@@ -38,10 +38,10 @@ const reverseStringArray = async (
 
 export const StringComponent = () => {
   const { values, handleChange } = useForm({ string: "" });
-  const [elementsArray, setElementsArray] = useState<Array<TarrayElement>>([]);
+  const [elementsArray, setElementsArray] = useState<Array<TArrayElement>>([]);
   const [isLoading, setLoading] = useState(false);
 
-  const submitInput = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -57,7 +57,7 @@ export const StringComponent = () => {
     <SolutionLayout title="Строка">
       <form
         className={styles.form}
-        onSubmit={(e: React.FormEvent) => submitInput(e)}
+        onSubmit={(e: React.FormEvent) => handleSubmit(e)}
       >
         <Input
           maxLength={11}
