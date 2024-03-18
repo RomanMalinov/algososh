@@ -6,35 +6,9 @@ import { Input } from "../ui/input/input";
 import { DELAY_IN_MS } from "../../constants/delays";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
-import { waitTime } from "./utils";
+import { waitTime } from "../../constants/commonUtils";
 import { useForm } from "../../hooks/use-form";
-
-export type TArrayElement = {
-  value: string;
-  color: ElementStates;
-};
-
-const reverseStringArray = async (
-  arr: TArrayElement[] | [],
-  setArr: React.Dispatch<React.SetStateAction<TArrayElement[]>>
-) => {
-  const length = arr.length;
-  const mid = Math.floor(length / 2);
-
-  for (let i = 0; i < mid; i++) {
-    const j = length - 1 - i;
-
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-
-    arr[i].color = arr[j].color = ElementStates.Changing;
-    setArr([...arr]);
-
-    await waitTime(DELAY_IN_MS);
-
-    arr[i].color = arr[j].color = ElementStates.Modified;
-    setArr([...arr]);
-  }
-};
+import { reverseStringArray, TArrayElement } from "./utils";
 
 export const StringComponent = () => {
   const { values, handleChange } = useForm({ string: "" });
@@ -44,7 +18,6 @@ export const StringComponent = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     const string = values.string.trim();
     const arr = string.split("").map((value) => ({ value, color: ElementStates.Default }));
     setElementsArray([...arr]);

@@ -1,0 +1,62 @@
+.form {
+  outline: 2px red solid;
+  margin: auto auto 48px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radioInput {
+  margin: 0 52px 0 40px;
+}
+
+.button {
+  width: 186px;
+  height: 60px;
+  margin: 0 80px 0 12px;
+}
+
+.buttonFixedSize {
+  width: 186px;
+  height: 60px;
+}
+
+.array {
+  height: 344px;
+  outline: 2px red solid;
+	display: flex;
+	gap: 10px;
+	align-items: end;
+	justify-content: center
+}
+
+
+
+
+
+
+/* .form {
+  display: flex;
+  max-width: 829px;
+  gap: 12px;
+  margin: auto;
+  align-items: center;
+}
+
+.ul {
+  height: 350px;
+  margin: auto;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  align-items: end;
+}
+
+.li {
+  all: unset;
+}
+
+.ml {
+  margin-left: 50px;
+} */

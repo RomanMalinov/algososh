@@ -5,16 +5,9 @@ import { Input } from "../ui/input/input";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { useForm } from "../../hooks/use-form";
-import { waitTime } from "./utils";
+import { calculateFibonaccifibonacciArray } from "./utils";
 import { SHORT_DELAY_IN_MS } from "../../constants/delays";
-
-const calculateFibonaccifibonacciArray = (n: number): number[] => {
-  const fibonacciArray: number[] = [1, 1];
-  for (let i = 2; i < n + 1; i++) {
-    fibonacciArray.push(fibonacciArray[i - 2] + fibonacciArray[i - 1]);
-  }
-  return fibonacciArray;
-};
+import { waitTime } from "../../constants/commonUtils";
 
 export const FibonacciPage = () => {
   const { values, handleChange } = useForm({ number: "" });
@@ -32,7 +25,6 @@ export const FibonacciPage = () => {
       for (let i = 0; i < fibfibonacciArray.length; i++) {
         await waitTime(SHORT_DELAY_IN_MS);
         setfibonacciArray((prevfibonacciArray) => [...prevfibonacciArray, fibfibonacciArray[i]]);
-
       }
       setLoading(false);
     }
@@ -52,16 +44,17 @@ export const FibonacciPage = () => {
           text="Рассчитать"
           type="submit"
           isLoader={isLoading}
-          disabled={isLoading}
+          disabled={!values.number}
         />
       </form>
       <div className={styles.array}>
         {
-          fibonacciArray && fibonacciArray.map((item, index) => {
+          fibonacciArray && fibonacciArray.map((element, index) => {
             return (
-              <Circle key={index}
+              <Circle
+                key={index}
                 index={index}
-                letter={item.toString()}
+                letter={element.toString()}
               />
             )
           })
