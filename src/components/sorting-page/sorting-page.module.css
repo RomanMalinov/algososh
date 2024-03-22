@@ -1,5 +1,5 @@
 .form {
-  outline: 2px red solid;
+  /* outline: 2px red solid; */
   margin: auto auto 48px auto;
   display: flex;
   align-items: center;
@@ -23,40 +23,9 @@
 
 .array {
   height: 344px;
-  outline: 2px red solid;
-	display: flex;
-	gap: 10px;
-	align-items: end;
-	justify-content: center
-}
-
-
-
-
-
-
-/* .form {
+  /* outline: 2px red solid; */
   display: flex;
-  max-width: 829px;
-  gap: 12px;
-  margin: auto;
-  align-items: center;
-}
-
-.ul {
-  height: 350px;
-  margin: auto;
-  margin-top: 40px;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
+  gap: 10px;
   align-items: end;
+  justify-content: center;
 }
-
-.li {
-  all: unset;
-}
-
-.ml {
-  margin-left: 50px;
-} */

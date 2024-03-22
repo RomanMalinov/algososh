@@ -44,7 +44,6 @@ export const StackPage = () => {
           onClick={() => operateStack("clear", null, elementsArray, setElementsArray, setValues, setLoading)}
           disabled={elementsArray.length === 0 || isLoading.add || isLoading.delete}
           isLoader={isLoading.clear}
-          extraClass={styles.clean}
         />
       </form>
       <div className={styles.array}>
