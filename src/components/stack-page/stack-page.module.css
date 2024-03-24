@@ -1,0 +1,19 @@
+.form {
+  /* outline: 2px red solid; */
+  margin: auto;
+  max-width: 829px;
+  display: flex;
+  gap: 12px;
+}
+
+.button {
+  margin-right: 80px;
+}
+
+.array {
+  margin-top: 120px;
+  /* outline: 2px green solid; */
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
