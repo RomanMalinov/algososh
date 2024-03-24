@@ -24,7 +24,8 @@ export const StackPage = () => {
   const [isDeletingLoading, setDeletingLoading] = useState(false);
   const [isClearingLoading, setClearingLoading] = useState(false);
 
-  const pushToStack = async () => {
+  const pushToStack = async (evt: React.MouseEvent<HTMLButtonElement>) => {
+    evt.preventDefault();
     if (values.stack) {
       setAddingLoading(true);
       ElementStack.push({
@@ -78,6 +79,7 @@ export const StackPage = () => {
         />
         <Button
           text="Добавить"
+          type="submit"
           onClick={pushToStack}
           disabled={!values.stack || isClearingLoading || isAddingLoading}
           isLoader={isAddingLoading}
