@@ -1,42 +1,36 @@
-import { Dispatch, SetStateAction } from "react";
-import { ElementStates } from "../../types/element-states";
-import { SHORT_DELAY_IN_MS } from "../../constants/delays";
-import { waitTime } from "../../constants/commonUtils";
-
-export type TArrayElement = {
-  value: string;
-  color: ElementStates;
+type TStack<T> = {
+  push: (item: T) => void;
+  pop: () => void;
+  clear: () => void;
+  peak: () => T | null;
+  getElements: () => T[];
+  head: (element: T) => boolean; 
 };
 
-export const operateStack = async (
-  action: string,
-  inputValue: string | null,
-  elementsArray: TArrayElement[],
-  setElementsArray: Dispatch<SetStateAction<TArrayElement[]>>,
-  setValues: Dispatch<SetStateAction<{ inputValue: string }>>,
-  setLoading: Dispatch<SetStateAction<{ add: boolean; delete: boolean; clear: boolean }>>
-): Promise<void> => {
-  if (action === "clear") {
-    setLoading((prevState) => ({ ...prevState, [action]: true }));
-    setElementsArray([]);
-  } else if (action === "delete" && elementsArray.length > 0) {
-    setLoading((prevState) => ({ ...prevState, [action]: true }));
-    await waitTime(SHORT_DELAY_IN_MS);
-    setElementsArray((prevStack) => prevStack.slice(0, -1));
-  } else if (action === "add" && inputValue) {
-    setLoading((prevState) => ({ ...prevState, [action]: true }));
-    setElementsArray((prevElementsArray) => [
-      ...prevElementsArray,
-      { value: inputValue, color: ElementStates.Changing },
-    ]);
-    setValues({ inputValue: "" });
-    await waitTime(SHORT_DELAY_IN_MS);
-    setElementsArray((prevElementsArray) => {
-      const newStack = [...prevElementsArray];
-      const peakItem = newStack[newStack.length - 1];
-      if (peakItem) peakItem.color = ElementStates.Default;
-      return newStack;
-    });
+export class Stack<T> implements TStack<T> {
+  private container: T[] = [];
+
+  push = (element: T): void => {
+    this.container.push(element);
   }
-  setLoading((prevState) => ({ ...prevState, [action]: false }));
-};
+
+  pop = (): void => {
+    if (this.container.length !== 0) {
+      this.container.pop();
+    }
+  }
+
+  clear = (): void => {
+    this.container = [];
+  }
+
+  peak = (): T => {
+    return this.container[this.container.length - 1];
+  }
+
+  getElements = () => this.container;
+
+  head = (element: T): boolean => {
+    return element === this.peak();
+  }
+}

@@ -35,6 +35,8 @@ export const FibonacciPage = () => {
       <form className={styles.form} onSubmit={handleSubmit}>
         <Input
           maxLength={19}
+          max={19}
+          type="number"
           isLimitText
           value={values.number}
           onChange={handleChange}
@@ -44,7 +46,7 @@ export const FibonacciPage = () => {
           text="Рассчитать"
           type="submit"
           isLoader={isLoading}
-          disabled={!values.number}
+          disabled={parseInt(values.number) === null || parseInt(values.number) > 19}
         />
       </form>
       <div className={styles.array}>

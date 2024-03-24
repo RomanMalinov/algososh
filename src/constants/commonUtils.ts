@@ -30,22 +30,3 @@ export const modifyArrayElementState = (
     }
   }))
 }
-
-type TupdateCircleState = {
-  value: string;
-  state: ElementStates;
-}
-export const updateCircleState = (
-  setFunc: React.Dispatch<React.SetStateAction<TupdateCircleState[]>>,
-  index: number,
-  state: ElementStates,
-  value?: string
-) => {
-  setFunc(prevArr => prevArr.map((element, currIndex) => {
-    if (currIndex === index) {
-      return { ...element, state, value: value ?? element.value };
-    }
-    return element;
-  }));
-}
-

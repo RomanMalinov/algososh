@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { HEAD, TAIL } from "../../constants/element-captions";
+import { useState } from "react";
 import { ElementStates } from "../../types/element-states";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
@@ -7,49 +6,96 @@ import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import styles from "./queue-page.module.css";
 import { useForm } from "../../hooks/use-form";
-import { addToQueue, removeFromQueue } from "./utils";
+import { Queue } from "./utils";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+import { waitTime } from "../../constants/commonUtils";
 
-type TQueueElement = {
+export type TQueueElement = {
   value: string;
   state: ElementStates;
 };
 
-export const QueuePage: React.FC = () => {
-  const { values, handleChange, setValues } = useForm({ string: '' });
-  const [queueElements, setQueueElements] = useState<Array<TQueueElement>>(Array(7).fill({ value: '', state: ElementStates.Default }));
-  const [head, setHead] = useState<number>(-1);
-  const [tail, setTail] = useState<number>(-1);
-  const [isLoading, setLoading] = useState<{ enqueueBtn: boolean, dequeueBtn: boolean }>({ enqueueBtn: false, dequeueBtn: false });
+const ElementQueue = new Queue<TQueueElement | null>(7);
 
-  const handleAddToQueue = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (tail < queueElements.length - 1) {
-      setLoading({ ...isLoading, enqueueBtn: true });
-      await addToQueue(values.string, queueElements, head, tail, setQueueElements, setHead, setTail);
-      setLoading({ ...isLoading, enqueueBtn: false });
-      setValues({ string: '' });
+const defaultQueue: TQueueElement[] = Array.from({ length: 7 }, () => ({
+  value: "",
+  state: ElementStates.Default,
+}));
+
+export const QueuePage = () => {
+  const { values, handleChange, setValues } = useForm({ string: "" });
+  const [queueElements, setQueueElements] = useState<TQueueElement[]>(defaultQueue);
+  const [queue, setQueue] = useState(ElementQueue);
+  const [isAddingLoading, setAddingLoading] = useState(false);
+  const [isDeletingLoading, setDeletingLoading] = useState(false);
+  const [isClearingLoading, setClearingLoading] = useState(false);
+
+  const pushToQueue = async () => {
+    if (values.string) {
+      setAddingLoading(true);
+      setValues({ string: "" });
+      ElementQueue.enqueue({ value: values.string, state: ElementStates.Default });
+      setQueue(ElementQueue);
+      queueElements[queue.getTail() - 1] = {
+        value: "",
+        state: ElementStates.Changing,
+      };
+      setQueueElements([...queueElements]);
+      await waitTime(SHORT_DELAY_IN_MS);
+      queueElements[queue.getTail() - 1] = {
+        value: values.string,
+        state: ElementStates.Changing,
+      };
+      setQueueElements([...queueElements]);
+      queueElements[queue.getTail() - 1] = {
+        value: values.string,
+        state: ElementStates.Default,
+      };
+      setQueueElements([...queueElements]);
+      setAddingLoading(false);
     }
   };
 
-  const handleRemoveFromQueue = async () => {
-    if (head <= tail) {
-      setLoading({ ...isLoading, dequeueBtn: true });
-      await removeFromQueue(queueElements, head, tail, setQueueElements, setHead, setTail);
-      setLoading({ ...isLoading, dequeueBtn: false });
-    }
+  const deleteFromQueue = async () => {
+    setDeletingLoading(true);
+    queue.dequeue();
+    setQueue(queue);
+    queueElements[queue.getHead() - 1] = {
+      value: queueElements[queue.getHead() - 1].value,
+      state: ElementStates.Changing,
+    };
+    setQueueElements([...queueElements]);
+    await waitTime(SHORT_DELAY_IN_MS);
+    queueElements[queue.getHead() - 1] = {
+      value: "",
+      state: ElementStates.Default,
+    };
+    setQueueElements([...queueElements]);
+    setDeletingLoading(false);
   };
 
-  const handleQueueClear = async () => {
-    setQueueElements(Array(7).fill({ value: '', state: ElementStates.Default }));
-    setHead(-1);
-    setTail(-1);
+  const resetQueue = () => {
+    setClearingLoading(true);
+    ElementQueue.clear();
+    setQueue(ElementQueue);
+    setQueueElements(
+      Array.from({ length: 7 }, () => ({
+        value: "",
+        state: ElementStates.Default,
+      }))
+    );
+    setClearingLoading(false);
   };
+
+  const head = (index: number) => (index === queue.getHead() && !queue.isEmpty()) ? "head" : null;
+  const tail = (index: number) => (index === queue.getTail() - 1 && !queue.isEmpty()) ? "tail" : null;
 
   return (
     <SolutionLayout title="Очередь">
-      <form className={styles.form} onSubmit={handleAddToQueue}>
+      <form className={styles.form}>
         <Input
           extraClass={styles.input}
+          type="text"
           name="string"
           value={values.string}
           isLimitText
@@ -59,32 +105,33 @@ export const QueuePage: React.FC = () => {
         <Button
           type="submit"
           text="Добавить"
-          isLoader={isLoading.enqueueBtn}
-          disabled={values.string.length === 0 || tail === queueElements.length - 1}
+          isLoader={isAddingLoading}
+          onClick={pushToQueue}
+          disabled={!values.string || isDeletingLoading || isClearingLoading}
         />
         <Button
           extraClass={styles.button}
           text="Удалить"
-          isLoader={isLoading.dequeueBtn}
-          onClick={handleRemoveFromQueue}
-          disabled={head < 0}
+          isLoader={isDeletingLoading}
+          disabled={queue.isEmpty() || isAddingLoading || isClearingLoading}
+          onClick={deleteFromQueue}
         />
         <Button
           text="Очистить"
-          onClick={handleQueueClear}
-          disabled={head < 0}
-          extraClass={styles.ml}
+          onClick={resetQueue}
+          disabled={queue.isEmpty() || isAddingLoading || isDeletingLoading}
+          isLoader={isClearingLoading}
         />
       </form>
       <div className={styles.array}>
-        {queueElements.map((element, index) => (
+        {queueElements && queueElements.map((element, index) => (
           <Circle
             key={index}
-            index={index}
-            letter={element.value}
             state={element.state}
-            head={index === head ? HEAD : ''}
-            tail={index === tail ? TAIL : ''}
+            letter={element.value}
+            index={index}
+            head={head(index)}
+            tail={tail(index)}
           />
         ))}
       </div>
